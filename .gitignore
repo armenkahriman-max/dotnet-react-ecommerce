@@ -55,3 +55,9 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+# React
+src/Ecommerce.Web/node_modules/
+src/Ecommerce.Web/dist/
+src/Ecommerce.Web/.env
+src/Ecommerce.Web/.env.local
