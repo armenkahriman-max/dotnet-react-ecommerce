@@ -12,6 +12,10 @@ function App() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState("");
+  const [stock, setStock] = useState("");
+  const [description, setDescription] = useState("");
 
 
 useEffect(() =>{
@@ -32,13 +36,39 @@ useEffect(() =>{
     loadProducts();
   
 }, []);
-
+async function handleSubmit(e: React.FormEvent) {
+  e.preventDefault();
+  try{
+  const response = await fetch("http://localhost:5161/api/products", { 
+    method: "POST",
+     headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name,
+         price: Number(price),
+          stock: Number(stock),
+      description
+    }),
+   });
+       if(!response.ok) {
+        throw new Error("Failed to submit");
+       } 
+       const created:Product = await response.json();
+       setProducts((current)=> [...current, created]);
+       setName("");
+       setPrice("");
+       setStock("");
+       setDescription("");
+      }catch(err){
+        setError(err instanceof Error ? err.message : "Something went wrong");
+      }
+    }
+    
 if (loading) return <p>Loading...</p>;
-if (error) return <p>{error}</p>;
 
 return (
   <main>
     <h1>Products</h1>
+    {error && <p>{error}</p>}
     {products.length === 0 ? (
       <p>No products yet.</p>
     ) : (
@@ -50,6 +80,32 @@ return (
         ))}
       </ul>
     )}
+
+      <form onSubmit={handleSubmit}>
+        <input
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="Name"
+        />
+        <input
+        type="number"
+        value={price}
+        onChange={(e) => setPrice(e.target.value)}
+        placeholder="Price"
+        />
+        <input
+        type="number"
+        value={stock}
+        onChange={(e) => setStock(e.target.value)}
+        placeholder="Stock"
+        />
+        <input
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        placeholder="Description"
+        />
+        <button type="submit">Add product</button>
+      </form>
   </main>
 );
 }
