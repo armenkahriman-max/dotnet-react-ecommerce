@@ -74,6 +74,21 @@ async function handleSubmit(e: React.FormEvent) {
         setError(err instanceof Error ? err.message : "Something went wrong");
         }
     }
+    async function deleteProduct(id: number) {
+      try{
+        const response = await fetch(`http://localhost:5161/api/products/${id}`, {
+          method:"DELETE",
+        });
+        if(!response.ok) {
+          throw new Error("Could not delete product");
+        }
+        setProducts((current) => current.filter((product) => product.id !== id));
+        setSelected(null);
+      }catch(err) {
+        setError(err instanceof Error ? err.message : "Something went wrong");
+      }
+    }
+    
       
   
     
@@ -95,13 +110,15 @@ return (
         </ul>
     )}
 
-        {selected && (
+        {selected && ( 
        <section>
        <h2>{selected.name}</h2>
        <p>{selected.price}</p>
         <p>Stock:{selected.stock}</p>
         <p>{selected.description}</p>
+        <button type="button" onClick={() => deleteProduct(selected.id)}>Delete</button>
         </section>
+        
     )}
 
       <form onSubmit={handleSubmit}>

@@ -38,4 +38,19 @@ public class ProductsController(AppDbContext dbContext) : ControllerBase
 
         return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
     }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> Delete(int id)
+    {
+        var product = await dbContext.Products.FindAsync(id);
+        if (product is null)
+        {
+            return NotFound();
+        }
+        dbContext.Products.Remove(product);
+        await dbContext.SaveChangesAsync();
+
+        return NoContent();
+
+    }
 }
