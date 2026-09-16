@@ -16,6 +16,7 @@ function App() {
   const [price, setPrice] = useState("");
   const [stock, setStock] = useState("");
   const [description, setDescription] = useState("");
+  const [selected, setSelected] = useState<Product | null>(null);
 
 
 useEffect(() =>{
@@ -62,6 +63,19 @@ async function handleSubmit(e: React.FormEvent) {
         setError(err instanceof Error ? err.message : "Something went wrong");
       }
     }
+    async function loadProduct(id: number) {
+      try{
+        const response = await fetch(`http://localhost:5161/api/products/${id}`);
+        if(!response.ok) {
+          throw new Error("Could not load product");
+        }
+          setSelected(await response.json())
+        } catch(err){
+        setError(err instanceof Error ? err.message : "Something went wrong");
+        }
+    }
+      
+  
     
 if (loading) return <p>Loading...</p>;
 
@@ -74,11 +88,20 @@ return (
     ) : (
       <ul>
         {products.map((product)=> (
-          <li key={product.id}>
+          <li key={product.id} onClick={() => loadProduct(product.id)}>
             {product.name}- {product.price}
           </li>
         ))}
-      </ul>
+        </ul>
+    )}
+
+        {selected && (
+       <section>
+       <h2>{selected.name}</h2>
+       <p>{selected.price}</p>
+        <p>Stock:{selected.stock}</p>
+        <p>{selected.description}</p>
+        </section>
     )}
 
       <form onSubmit={handleSubmit}>
@@ -107,6 +130,7 @@ return (
         <button type="submit">Add product</button>
       </form>
   </main>
+ 
 );
 }
 export default App;
