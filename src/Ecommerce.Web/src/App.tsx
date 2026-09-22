@@ -69,7 +69,12 @@ async function handleSubmit(e: React.FormEvent) {
         if(!response.ok) {
           throw new Error("Could not load product");
         }
-          setSelected(await response.json())
+        const product =await response.json()
+          setSelected(product)
+          setName(product.name);
+          setPrice(String(product.price));
+          setStock(String(product.stock));
+          setDescription(product.description);
         } catch(err){
         setError(err instanceof Error ? err.message : "Something went wrong");
         }
@@ -86,6 +91,17 @@ async function handleSubmit(e: React.FormEvent) {
         setSelected(null);
       }catch(err) {
         setError(err instanceof Error ? err.message : "Something went wrong");
+      }
+    }
+    async function updateProduct (id: number){
+      try {
+        const response = await fetch(`http://localhost:5161/api/products/${id}`, {
+          method:"PUT",
+        })
+        if(!response.ok) {
+          throw new Error("Failed to updated");
+        }
+        
       }
     }
     

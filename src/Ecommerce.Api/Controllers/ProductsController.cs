@@ -7,7 +7,7 @@ namespace Ecommerce.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ProductsController(AppDbContext dbContext) : ControllerBase
+public class ProductsController(AppDbContext dbContext) : ControllerBase //here
 {
     [HttpGet]
     public async Task<ActionResult<List<Product>>> GetAll()
@@ -53,4 +53,5 @@ public class ProductsController(AppDbContext dbContext) : ControllerBase
         return NoContent();
 
     }
+  
 }
