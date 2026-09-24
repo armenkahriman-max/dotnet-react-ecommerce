@@ -1,13 +1,17 @@
+using Ecommerce.Api.Application;
 using Ecommerce.Api.Data;
 using Ecommerce.Api.Domain;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
 namespace Ecommerce.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ProductsController(AppDbContext dbContext) : ControllerBase //here
+public class ProductsController(AppDbContext dbContext,
+ CreateProductCommandHandler handler) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<List<Product>>> GetAll()
@@ -31,12 +35,10 @@ public class ProductsController(AppDbContext dbContext) : ControllerBase //here
     }
 
     [HttpPost]
-    public async Task<ActionResult> Create(Product product)
+    public async Task<ActionResult<CreateProductResponse>> Create(CreateProductRequest request)
     {
-        dbContext.Products.Add(product);
-        await dbContext.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
+        var created = await handler.Execute(request);
+        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
 
     [HttpDelete("{id}")]
@@ -53,5 +55,5 @@ public class ProductsController(AppDbContext dbContext) : ControllerBase //here
         return NoContent();
 
     }
-  
+
 }
