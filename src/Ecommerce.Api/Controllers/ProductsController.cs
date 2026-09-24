@@ -1,9 +1,8 @@
 using Ecommerce.Api.Application;
+using Ecommerce.Api.Application.Products;
 using Ecommerce.Api.Data;
 using Ecommerce.Api.Domain;
-using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
 namespace Ecommerce.Api.Controllers;
@@ -11,17 +10,15 @@ namespace Ecommerce.Api.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 public class ProductsController(AppDbContext dbContext,
- CreateProductCommandHandler handler) : ControllerBase
+ Handler handler) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<List<Product>>> GetAll()
+    public async Task<ActionResult<List<ListProductResponse>>> GetAll()
     {
-        var products = await dbContext.Products
-        .OrderBy(product => product.Name)
-        .ToListAsync();
-
+        var products = await handler.List();
         return Ok(products);
     }
+
 
     [HttpGet("{id}")]
     public async Task<ActionResult<Product>> GetById(int id)
@@ -37,7 +34,7 @@ public class ProductsController(AppDbContext dbContext,
     [HttpPost]
     public async Task<ActionResult<CreateProductResponse>> Create(CreateProductRequest request)
     {
-        var created = await handler.Execute(request);
+        var created = await handler.Create(request);
         return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
 
