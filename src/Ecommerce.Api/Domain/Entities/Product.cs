@@ -18,4 +18,12 @@ public class Product : Entity
         Description = description;
     }
 
+    public void Update(ProductName name, Money price, int stock, string description)
+    {
+        Name = name;
+        Price = price;
+        Stock = stock;
+        Description = description;
+    }
+
 }
